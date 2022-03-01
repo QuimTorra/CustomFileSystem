@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FileSystem</title>
+</head>
+<body>
+  <header>
+    <h2>FileSystem</h2>
+
+    <!-- <input type="search" name="search" id="search"> -->
+    <div class="search-bar" >
+      <input type="text" name="search" id="searchbar" placeholder="search..." oninput="runSearch()">
+      <button type="submit" class="btn-search" >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="fs-btns">
+      <input type="file" name="file" id="file" class="hidden" multiple>
+      <button id="botonazo" onclick="startFileUpload()" class="btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-file-earmark-arrow-up" viewBox="0 0 16 16">
+          <path d="M8.5 11.5a.5.5 0 0 1-1 0V7.707L6.354 8.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 7.707V11.5z"/>
+          <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+        </svg>
+        UPLOAD
+      </button>
+      <button class="btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-folder-plus" viewBox="0 0 16 16">
+          <path d="m.5 3 .04.87a1.99 1.99 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14H9v-1H2.826a1 1 0 0 1-.995-.91l-.637-7A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09L14.54 8h1.005l.256-2.819A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2zm5.672-1a1 1 0 0 1 .707.293L7.586 3H2.19c-.24 0-.47.042-.683.12L1.5 2.98a1 1 0 0 1 1-.98h3.672z"/>
+          <path d="M13.5 10a.5.5 0 0 1 .5.5V12h1.5a.5.5 0 1 1 0 1H14v1.5a.5.5 0 1 1-1 0V13h-1.5a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="preview-scr hidden" id="prev-scr">
+    <div class="prev-header">
+      <h3 class="prev-name" id="prev-name"></h3>
+      <input type="text" name="editName" id="editName" class="hidden editName">
+      <div class="prev-controls" id="prev-controls">
+        <button class="p-btn change-name-btn" id="change-name-btn" onclick="editName()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+          </svg>
+        </button>
+        <button class="p-btn download-btn" onclick="downloadFile()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+          </svg>
+          DOWNLOAD
+        </button>
+        <button class="p-btn del-btn" onclick="delFile()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+            <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <img src="" id="prev-img" class="prev-img">
+    <button class="close-btn" id="close-prev" onclick="closePreview()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"/>
+        <path fill-rule="evenodd" d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="container" id="container">
+    <h2 class="searchTitle" id="searchTitle"></h2>
+    <div class="content" id="content" style="overflow: auto;">
+    </div>
+  </div>
+
+  <script>
+    const body = document.body
+    const searchbar = document.getElementById("searchbar")
+    const f = document.getElementById("file")
+    const btn = document.getElementById("botonazo")
+    const container = document.getElementById("container")
+    const content = document.getElementById("content")
+    const previewScr = document.getElementById("prev-scr")
+    const prevTitle = document.getElementById("prev-name")
+    const nameLabel = document.getElementById("editName")
+    const prevImg = document.getElementById("prev-img")
+    
+    let fileArray = []
+
+    let dFile = "";
+    let dUrl = "";
+    let focused = false;
+
+    window.addEventListener('keyup', function(event) {
+      if (event.keyCode === 27 && !previewScr.classList.contains("hidden") && nameLabel.classList.contains("hidden")) {
+        previewScr.classList.add("hidden")
+      }
+      if (event.keyCode === 9 && !previewScr.classList.contains("hidden")) {
+        if (focused) return
+        focused = true
+        if (event.shiftKey) {
+          document.getElementById("close-prev").focus()
+          return;
+        }
+        document.getElementById("change-name-btn").focus()
+      }
+
+      if(event.keyCode === 13 && !nameLabel.classList.contains("hidden")) {
+        const file = nameLabel.value
+        prevTitle.textContent = file
+        nameLabel.classList.add("hidden")
+        prevTitle.classList.remove("hidden")
+        changeName(file)
+        // preview(file)
+      }
+      if(event.keyCode === 27 && !nameLabel.classList.contains("hidden")) {
+        nameLabel.classList.add("hidden")
+        prevTitle.classList.remove("hidden")
+      }
+    });
+
+    f.onchange = () => {
+      // console.log(selFile)
+      let files = f.files
+      for ( let i = 0; i < files.length; i++ ) {
+        let selFile = files[i]
+        const fileReader = new FileReader()
+
+        fileReader.onload = async ev => {
+          const CHUNK_SIZE = 8000;
+          const chunkCount = ev.target.result.byteLength/CHUNK_SIZE;
+
+          // const fileName = Math.random() * 100 + selFile.name
+          const fileName = selFile.name
+          for (let cID = 0; cID <= chunkCount; cID++) {
+            btn.classList.add("loading");
+            const c = cID * CHUNK_SIZE
+            const chunk = ev.target.result.slice(c, c+CHUNK_SIZE)
+          
+            await fetch("http://localhost:8080/upload", {
+              "method": "POST",
+              "headers": {
+                "content-type": "application/octet-string",
+                "content-lenght": chunk.length,
+                "file-name": fileName
+              },
+              "body": chunk
+            })
+            btn.innerHTML = Math.round(cID * 100/chunkCount) + "%"
+          }
+          btn.classList.remove("loading")
+          btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-file-earmark-arrow-up" viewBox="0 0 16 16">
+              <path d="M8.5 11.5a.5.5 0 0 1-1 0V7.707L6.354 8.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 7.707V11.5z"/>
+              <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+            </svg>
+            UPLOAD`
+          getStorage()
+        }
+        fileReader.readAsArrayBuffer(selFile)
+        }
+    }
+
+    function startFileUpload() {
+      f.click()
+    }
+
+    async function getStorage() {
+      await fetch("http://localhost:8080/storage")
+        .then(res => res.json())
+        .then(data => {
+          //console.log(data)
+          content.innerHTML = '' 
+          fileArray = data
+          data.forEach(el => {
+            content.innerHTML += `<button class="card" onclick="preview('${el}')" title="${el}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark" viewBox="0 0 16 16">
+                  <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/>
+                </svg>
+                <div style="overflow:hidden">${el}</div>
+              </button>`
+          });
+          runSearch()
+        })
+    }
+
+    getStorage()
+
+    async function preview(file) {
+      focused = false
+      await fetch(`http://localhost:8080/download`, {
+        "method": "GET",
+        "headers": {
+          "file-name": file
+        }
+      })
+        .then(res => res.body)
+        .then(body => {
+          const reader = body.getReader()
+          prevTitle.innerHTML = file
+          prevImg.src = ''
+          previewScr.classList.remove("hidden")
+          
+          return new ReadableStream({
+            start(controller) {
+              return pump()
+              function pump() {
+                reader.read()
+                  .then( ({done, value}) => {
+                    if (done) {
+                      controller.close()
+                      return
+                    }
+                    controller.enqueue(value)
+                    return pump()
+                  })
+              }
+            }
+          })
+      })
+      .then(stream => new Response(stream))
+      .then(res => res.blob())
+      .then(blob => URL.createObjectURL(blob))
+      .then(url => {
+        dUrl = url
+        dFile = file
+        prevImg.src = url
+      })
+      .catch(err => console.log(`!!! ERROR: ${err}`))
+
+      // console.log(`preview ${file}`)
+    }
+
+    function closePreview() {
+      previewScr.classList.add("hidden")
+    }
+
+    function downloadFile() {
+      var link = document.createElement("a");
+      link.download = dFile;
+      link.href = dUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      delete link;
+    }
+
+    async function delFile() {
+      // I SHOULD PROMPT FOR CONFIRMATION
+      await fetch('http://localhost:8080/delfile', {
+        "method": "DELETE",
+        "headers": {
+          "file-name": dFile
+        }
+      })
+        .then(res => {
+          closePreview()
+          getStorage() 
+        })
+    }
+
+    async function changeName(name) {
+      if (name == undefined || name == "" || name == " "){
+        return;
+      } 
+      await fetch("http://localhost:8080/changename", {
+        "method": "POST",
+        "headers": {
+          "file": dFile,
+          "file-name": name
+        }
+      })
+        .then(res => {
+          dFile = name
+          getStorage() 
+          runSearch()
+        })
+    }
+
+    function editName() {
+      nameLabel.classList.remove("hidden")
+      nameLabel.value = prevTitle.textContent
+      nameLabel.focus()
+      prevTitle.classList.add("hidden")
+    }
+
+    function runSearch() {
+      if (searchbar.value.trim() == "") {
+        document.getElementById("searchTitle").innerHTML = ""
+      } else {
+        document.getElementById("searchTitle").innerHTML = `<button class="close-btn" onclick="clearSearch()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"/>
+              <path fill-rule="evenodd" d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"/>
+            </svg>
+          </button>Results for ${searchbar.value}`
+      }
+
+      content.innerHTML = ``
+      fileArray.filter(file => file.toLowerCase().includes(searchbar.value.toLowerCase())).forEach(el => {
+        content.innerHTML += `<button class="card" onclick="preview('${el}')" title="${el}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark" viewBox="0 0 16 16">
+              <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/>
+            </svg>
+            <div style="overflow:hidden">${el}</div>
+          </button>`
+      })
+    }
+
+    function clearSearch() {
+      
+      searchbar.value = ""
+      runSearch()
+    }
+  </script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap');
+
+    :root {
+      --l-background: #ffffff;
+      --l-glass: rgba(255, 255, 255, 0.3);
+      --l-gray: gray;
+      --l-primary: #0287c3;
+      --l-load: #ce6231;
+      --l-download: #31ce62;
+      --l-chname: #ceb031;
+      --l-del: #e91e32;
+      --l-text: #000000;
+
+      --d-background: #333333;
+      --d-glass: rgba(0, 0, 0, 0.5);
+      --d-gray: #CCCCCC;
+      --d-primary: #4ba9f5;
+      --d-load: #f5974b;
+      --d-download: #31ce62;
+      --d-chname: #ceb031;
+      --d-del: #e91e32;
+      --d-text: #FFFFFF;
+
+      --background: var(--l-background);
+      --glass: var(--l-glass);
+      --gray: var(--l-gray);
+      --primary: var(--l-primary);
+      --load: var(--l-load);
+      --download: var(--l-download);
+      --chname: var(--l-chname);
+      --del: var(--l-del);
+      --text-c: var(--l-text);
+    }
+
+    @media(prefers-color-scheme: dark){
+      :root {
+        --background: var(--d-background);
+        --glass: var(--d-glass);
+        --gray: var(--d-gray);
+        --primary: var(--d-primary);
+        --text-c: var(--d-text);
+        --download: var(--d-download);
+        --chname: var(--d-chname);
+        --del: var(--d-del);
+      }
+    }
+
+    html {
+      font-family: 'Ubuntu', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--background);
+      color: var(--text-c);
+    }
+
+    header {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      border-bottom: 1px solid var(--gray);
+    }
+
+
+    .search-bar {
+      display: flex;
+    }
+
+    #searchbar {
+      height: min-content;
+      padding-inline: 0.65rem;
+      padding-block: 0.35rem;
+      border: 2px solid var(--gray);
+      border-radius: 5px;
+      background-color: var(--background);
+      color: var(--text-c);
+      outline: none;
+      font-family: 'Ubuntu', sans-serif;
+      transition: cubic-bezier(0.165, 0.84, 0.44, 1) 500ms;
+    }
+    #searchbar:focus-visible {
+      border-color: var(--primary); 
+    }
+
+    .fs-btns {
+      display: flex;
+      gap: .5rem;
+    }
+    
+    .btn-search {
+      background-color: transparent;
+      border: none;
+      outline: none;
+      display: flex;
+      align-items: center;
+      color: var(--text-c);
+      transition: cubic-bezier(0.165, 0.84, 0.44, 1) 500ms;
+    }
+    .btn-search:hover, .btn-search:focus-visible {
+      color: var(--primary);
+    }
+
+    .btn {
+      height: min-content;
+      padding-inline: 0.65rem;
+      padding-block: 0.35rem;
+      background-color: transparent;
+      border: 2px solid var(--gray);
+      border-radius: 5px;
+      outline: none;
+      display: flex;
+      align-items: center;
+      font-family: 'Ubuntu', sans-serif;
+      color: var(--text-c);
+      transition: cubic-bezier(0.165, 0.84, 0.44, 1) 500ms;
+     
+    }
+    .btn#botonazo > svg {
+      padding-right: .5rem;
+    }
+
+    .btn:hover, .btn:focus-visible {
+      cursor: pointer;
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn.loading {
+      border-color: var(--load);
+      color: var(--load);
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      position: relative;
+    }
+    .container > h2 {
+      padding: 0;
+      margin: 0;
+      margin-block: 1rem;
+      width: 90%
+    }
+
+    .content {
+      overflow: auto;
+      width: 90%;
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+      /* padding-top: 2rem; */
+      place-items: center;
+      gap: 1rem;
+    }
+
+    .card {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      padding-block: .5rem;
+      width: 7rem;
+      border-radius: 5px;
+      border: 2px solid var(--gray);
+      color: var(--text-c);
+      background-color: transparent;
+      outline: none;
+      font-family: 'Ubuntu', sans-serif;
+      transition: cubic-bezier(0.165, 0.84, 0.44, 1) 500ms;
+    }
+    .card:hover, .card:focus-visible {
+      cursor: pointer;
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .card > svg {
+      min-width: 16px;
+      min-height: 16px;
+      margin-right: 6px;
+    }
+    .card > div {
+      white-space: nowrap;
+    }
+
+    .preview-scr {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      width: 70%;
+      height: 80%;
+      background-color: var(--glass);
+      backdrop-filter: blur(10px);
+      border-radius: 9px;
+      padding: 1rem;
+
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      box-shadow: 0 5px 10px #333333;
+    }
+
+    .prev-header {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .prev-controls {
+      display: flex;
+      width: min-content;
+      padding: 0.5rem;
+      border-radius: 5px;
+      background-color: var(--background);
+      gap: .5rem;
+      margin-top: .25rem;
+      margin-bottom: 1rem;
+    }
+
+    .p-btn {
+      background-color: transparent;
+      color: var(--text-c);
+      display: flex;
+      place-content: center;
+      border: 2px solid transparent;
+      border-radius: 5px;
+      outline: none;
+      gap: .25rem;
+      padding: .35rem;
+      transition: linear 250ms;
+      font-family: 'Ubuntu', sans-serif;
+    }
+    .p-btn:hover, .p-btn:focus-visible {
+      cursor: pointer;
+      border: 2px solid var(--gray);
+    }
+
+    .change-name-btn:hover, .change-name-btn:focus {
+      color: var(--chname);
+      border-color: var(--chname);
+    }
+    .download-btn:hover, .download-btn:focus-visible {
+      color: var(--download);
+      border-color: var(--download);
+    }
+    .del-btn:hover, .del-btn:focus-visible {
+      color: var(--del);
+      border-color: var(--del);
+    }
+
+    .prev-name {
+      padding: 0;
+      margin: 0;
+    }
+
+    .prev-img {
+      max-height: 70%;
+      object-fit: contain; 
+    }
+
+    #close-prev {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
+    .close-btn {
+      color: var(--text-c);
+      background: none;
+      border: none;
+      outline: none;
+      transition: all cubic-bezier(0.165, 0.84, 0.44, 1) 500ms;
+    }
+    .close-btn:hover, .close-btn:focus-visible {
+      cursor: pointer;
+      transform: scale(1.3);
+    }
+
+    .editName {
+      display: block;
+      font-size: 1.17em;
+      font-weight: bold;
+      background-color: var(--glass);
+      border: none;
+      outline: none;
+      color: var(--text-c);
+      text-align: center;
+      font-family: 'Ubuntu', sans-serif;
+    }
+
+    .hidden {
+      display: none;
+    }
+    
+    @media(max-width: 500px) {
+      header {
+        flex-direction: column;
+        padding-block: 1rem;
+        gap: .5rem;
+      }
+      header > h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+    }
+
+  </style>
+</body>
+</html>

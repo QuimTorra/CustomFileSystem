@@ -1,0 +1,18 @@
+- Upload done
+  - Repeated names add "(id)" todo
+- Download done
+- Preview done
+  / For testing i'm suposing everything is an image
+  - Associate file tipe to show in Content and Preview todo
+- ChangeName done
+- Delete done
+- Search done
+
+-- 25/02/2022 --
+
+Added: 
+  - Multiple file uploading
+
+Bug Fixing:
+  - Fixed bug where each file would appear twice
+  - Fixed bug where the server would crash if you tried to change a name twice in a row without closing the preview
